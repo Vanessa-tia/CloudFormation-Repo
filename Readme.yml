@@ -9,6 +9,11 @@ Parameters:
       - t2.small
     Default: t2.micro
 
+  KeyNameParameter:
+    Description: Please select a key pair value
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: Tianikey-EC2
+
   SubnetIds:
     Type: String 
     Default: subnet-023c22d47a09b53c8
@@ -23,6 +28,7 @@ Resources:
     Properties:
       InstanceType: !Ref InstanceType
       ImageId: !Ref LatestAmiId 
+      KeyName: !Ref KeyNameParameter # 'Tianikey-EC2'
       SubnetId: !Ref SubnetIds
 
   MyEIP: 

@@ -1,0 +1,47 @@
+Parameters:
+  InstanceType: 
+    Description: WebServer EC2 Instance Type
+    Type: String
+    AllowedValues: #possible values
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+    Default: t2.micro
+
+  SubnetIds:
+    Type: String 
+    Default: subnet-023c22d47a09b53c8
+  
+  LatestAmiId: # Fetching LatestAmiId from Parameter store
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+
+Resources:
+  MyEC2Instance: # logical name of the resource
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref LatestAmiId 
+      SubnetId: !Ref SubnetIds
+
+  MyEIP: 
+    Type: AWS::EC2::EIP
+    Description: Create an Elastic IP
+
+############# Create and associate an Elastic Ip #############
+  IPAssoc:
+    Type: AWS::EC2::EIPAssociation
+    Description: Associate the Elastic IP to ec2 instance.
+    Properties:
+      InstanceId: !Ref MyEC2Instance
+      EIP: !Ref MyEIP
+
+Outputs:
+  EC2InstancePrivateOutput:
+    Description: Display the Private IP address of the instance.
+    Value: !GetAtt MyEC2Instance.PrivateIp
+
+  EC2InstancePublicOutput:
+    Description: Display the Public IP address of the instance.
+    Value: !GetAtt MyEC2Instance.PublicIp
